@@ -3,28 +3,28 @@ package fargo
 // MIT Licensed (see README.md) - Copyright (c) 2013 Hudl <@Hudl>
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/smartystreets/goconvey/convey"
 	"testing"
 	"time"
 )
 
 func TestGetNXDomain(t *testing.T) {
-	Convey("Given nonexistent domain nxd.local.", t, func() {
+	convey.Convey("Given nonexistent domain nxd.local.", t, func() {
 		resp, _, err := findTXT("nxd.local.")
-		So(err, ShouldNotBeNil)
-		So(len(resp), ShouldEqual, 0)
+		convey.So(err, convey.ShouldNotBeNil)
+		convey.So(len(resp), convey.ShouldEqual, 0)
 	})
 }
 
 func TestGetNetflixTestDomain(t *testing.T) {
-	Convey("Given domain txt.us-east-1.discoverytest.netflix.net.", t, func() {
+	convey.Convey("Given domain txt.us-east-1.discoverytest.netflix.net.", t, func() {
 		// TODO: use a mock DNS server to eliminate dependency on netflix
 		// keeping their discoverytest domain up
 		resp, ttl, err := findTXT("txt.us-east-1.discoverytest.netflix.net.")
-		So(err, ShouldBeNil)
-		So(ttl, ShouldEqual, 60*time.Second)
-		So(len(resp), ShouldEqual, 3)
-		Convey("And the contents are zone records", func() {
+		convey.So(err, convey.ShouldBeNil)
+		convey.So(ttl, convey.ShouldEqual, 60*time.Second)
+		convey.So(len(resp), convey.ShouldEqual, 3)
+		convey.Convey("And the contents are zone records", func() {
 			expected := map[string]bool{
 				"us-east-1c.us-east-1.discoverytest.netflix.net": true,
 				"us-east-1d.us-east-1.discoverytest.netflix.net": true,
@@ -32,27 +32,27 @@ func TestGetNetflixTestDomain(t *testing.T) {
 			}
 			for _, item := range resp {
 				_, ok := expected[item]
-				So(ok, ShouldEqual, true)
+				convey.So(ok, convey.ShouldEqual, true)
 			}
-			Convey("And the zone records contain instances", func() {
+			convey.Convey("And the zone records contain instances", func() {
 				for _, record := range resp {
 					servers, _, err := findTXT("txt." + record + ".")
-					So(err, ShouldBeNil)
-					So(len(servers) >= 1, ShouldEqual, true)
+					convey.So(err, convey.ShouldBeNil)
+					convey.So(len(servers) >= 1, convey.ShouldEqual, true)
 					// servers should be EC2 DNS names
-					So(servers[0][0:4], ShouldEqual, "ec2-")
+					convey.So(servers[0][0:4], convey.ShouldEqual, "ec2-")
 				}
 			})
 		})
 	})
-	Convey("Autodiscover discoverytest.netflix.net.", t, func() {
+	convey.Convey("Autodiscover discoverytest.netflix.net.", t, func() {
 		servers, ttl, err := discoverDNS("discoverytest.netflix.net", 7001, "")
-		So(ttl, ShouldEqual, 60*time.Second)
-		So(err, ShouldBeNil)
-		So(len(servers), ShouldEqual, 6)
-		Convey("Servers discovered should all be EC2 DNS names", func() {
+		convey.So(ttl, convey.ShouldEqual, 60*time.Second)
+		convey.So(err, convey.ShouldBeNil)
+		convey.So(len(servers), convey.ShouldEqual, 6)
+		convey.Convey("Servers discovered should all be EC2 DNS names", func() {
 			for _, s := range servers {
-				So(s[0:11], ShouldEqual, "http://ec2-")
+				convey.So(s[0:11], convey.ShouldEqual, "http://ec2-")
 			}
 		})
 	})

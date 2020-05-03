@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 type roundtripper struct {
@@ -24,22 +24,22 @@ func TestHttpClient(t *testing.T) {
 	}))
 	defer server.Close()
 
-	Convey("Given fargo.HttpClient is set to a custom client", t, func() {
+	convey.Convey("Given fargo.HttpClient is set to a custom client", t, func() {
 		rt := new(roundtripper)
 		HttpClient = &http.Client{
 			Transport: rt,
 		}
 
-		Convey("netReq uses that client to handle requests", func() {
+		convey.Convey("netReq uses that client to handle requests", func() {
 			req, err := http.NewRequest("GET", server.URL, nil)
-			So(err, ShouldBeNil)
+			convey.So(err, convey.ShouldBeNil)
 
 			respBody, respCode, err := netReq(req)
-			So(err, ShouldBeNil)
-			So(respCode, ShouldEqual, 200)
-			So(string(respBody), ShouldEqual, "Hello World")
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(respCode, convey.ShouldEqual, 200)
+			convey.So(string(respBody), convey.ShouldEqual, "Hello World")
 
-			So(rt.TripCount, ShouldEqual, 1)
+			convey.So(rt.TripCount, convey.ShouldEqual, 1)
 		})
 	})
 }

@@ -2,3 +2,4 @@
 eureka
 .vagrant/
 .idea/
+/vendor/

@@ -4,10 +4,10 @@ package fargo_test
 
 import (
 	"fmt"
+	"github.com/smartystreets/goconvey/convey"
 	"testing"
 
-	"github.com/hudl/fargo"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/dubbogo/fargo"
 )
 
 func TestInstanceID(t *testing.T) {
@@ -21,64 +21,64 @@ func TestInstanceID(t *testing.T) {
 		Status:           fargo.UP,
 	}
 
-	Convey("Given an instance with DataCenterInfo.Name set to Amazon", t, func() {
+	convey.Convey("Given an instance with DataCenterInfo.Name set to Amazon", t, func() {
 		i.DataCenterInfo = fargo.DataCenterInfo{Name: fargo.Amazon}
 
-		Convey("When UniqueID function has NOT been set", func() {
+		convey.Convey("When UniqueID function has NOT been set", func() {
 			i.UniqueID = nil
 
-			Convey("And InstanceID has been set in AmazonMetadata", func() {
+			convey.Convey("And InstanceID has been set in AmazonMetadata", func() {
 				i.DataCenterInfo.Metadata.InstanceID = "EXPECTED-ID"
 
-				Convey("Id() should return the provided InstanceID", func() {
-					So(i.Id(), ShouldEqual, "EXPECTED-ID")
+				convey.Convey("Id() should return the provided InstanceID", func() {
+					convey.So(i.Id(), convey.ShouldEqual, "EXPECTED-ID")
 				})
 			})
 
-			Convey("And InstanceID has NOT been set in AmazonMetadata", func() {
+			convey.Convey("And InstanceID has NOT been set in AmazonMetadata", func() {
 				i.DataCenterInfo.Metadata.InstanceID = ""
 
-				Convey("Id() should return an empty string", func() {
-					So(i.Id(), ShouldEqual, "")
+				convey.Convey("Id() should return an empty string", func() {
+					convey.So(i.Id(), convey.ShouldEqual, "")
 				})
 			})
 		})
 
-		Convey("When UniqueID function has been set", func() {
+		convey.Convey("When UniqueID function has been set", func() {
 			i.UniqueID = func(i fargo.Instance) string {
 				return fmt.Sprintf("%s:%d", i.App, 123)
 			}
 
-			Convey("And InstanceID has been set in AmazonMetadata", func() {
+			convey.Convey("And InstanceID has been set in AmazonMetadata", func() {
 				i.DataCenterInfo.Metadata.InstanceID = "UNEXPECTED"
 
-				Convey("Id() should return the ID that is provided by UniqueID", func() {
-					So(i.Id(), ShouldEqual, "TESTAPP:123")
+				convey.Convey("Id() should return the ID that is provided by UniqueID", func() {
+					convey.So(i.Id(), convey.ShouldEqual, "TESTAPP:123")
 				})
 			})
 
-			Convey("And InstanceID has not been set in AmazonMetadata", func() {
+			convey.Convey("And InstanceID has not been set in AmazonMetadata", func() {
 				i.DataCenterInfo.Metadata.InstanceID = ""
 
-				Convey("Id() should return the ID that is provided by UniqueID", func() {
-					So(i.Id(), ShouldEqual, "TESTAPP:123")
+				convey.Convey("Id() should return the ID that is provided by UniqueID", func() {
+					convey.So(i.Id(), convey.ShouldEqual, "TESTAPP:123")
 				})
 			})
 		})
 	})
 
-	Convey("Given an instance with DataCenterInfo.Name set to MyOwn", t, func() {
+	convey.Convey("Given an instance with DataCenterInfo.Name set to MyOwn", t, func() {
 		i.DataCenterInfo = fargo.DataCenterInfo{Name: fargo.MyOwn}
 
-		Convey("When UniqueID function has NOT been set", func() {
+		convey.Convey("When UniqueID function has NOT been set", func() {
 			i.UniqueID = nil
 
-			Convey("Id() should return the host name", func() {
-				So(i.Id(), ShouldEqual, "i-6543")
+			convey.Convey("Id() should return the host name", func() {
+				convey.So(i.Id(), convey.ShouldEqual, "i-6543")
 			})
 		})
 
-		Convey("When UniqueID function has been set", func() {
+		convey.Convey("When UniqueID function has been set", func() {
 			i.Metadata.Raw = []byte(`{"instanceId": "unique-id"}`)
 			i.UniqueID = func(i fargo.Instance) string {
 				if id, err := i.Metadata.GetString("instanceId"); err == nil {
@@ -87,8 +87,8 @@ func TestInstanceID(t *testing.T) {
 				return i.HostName
 			}
 
-			Convey("Id() should return the ID that is provided by UniqueID", func() {
-				So(i.Id(), ShouldEqual, "i-6543:unique-id")
+			convey.Convey("Id() should return the ID that is provided by UniqueID", func() {
+				convey.So(i.Id(), convey.ShouldEqual, "i-6543:unique-id")
 			})
 		})
 	})

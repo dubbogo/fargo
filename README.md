@@ -15,7 +15,7 @@ all the required containers. Once the Eureka containers are running, and fargo i
 
 Run:
 ```
-docker run --rm -v "$PWD":/go/src/github.com/hudl/fargo -w /go/src/github.com/hudl/fargo hudloss/fargo:master go test -v ./...
+docker run --rm -v "$PWD":/go/src/github.com/dubbogo/fargo -w /go/src/github.com/dubbogo/fargo hudloss/fargo:master go test -v ./...
 ```
 Note: If you are running bash for Windows add `MSYS_NO_PATHCONV=1 ` at the beginning.
 
@@ -76,14 +76,14 @@ for {
 
 ## Just Let Me Import Already
 
-`go get github.com/hudl/fargo`
+`go get github.com/dubbogo/fargo`
 
 ```go
 
 package main
 
 import (
-    "github.com/hudl/fargo"
+    "github.com/dubbogo/fargo"
 )
 
 func main() {

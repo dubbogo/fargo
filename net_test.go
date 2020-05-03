@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func instancePredicateFrom(t *testing.T, opts ...InstanceQueryOption) func(*Instance) bool {
@@ -42,98 +42,98 @@ func (s *countingSource) Reset() {
 }
 
 func TestInstanceQueryOptions(t *testing.T) {
-	Convey("A status predicate", t, func() {
-		Convey("mandates a nonempty status", func() {
+	convey.Convey("A status predicate", t, func() {
+		convey.Convey("mandates a nonempty status", func() {
 			var opts instanceQueryOptions
 			err := WithStatus("")(&opts)
-			So(err, ShouldNotBeNil)
-			So(opts.predicate, ShouldBeNil)
+			convey.So(err, convey.ShouldNotBeNil)
+			convey.So(opts.predicate, convey.ShouldBeNil)
 		})
 		matchesStatus := func(pred func(*Instance) bool, status StatusType) bool {
 			return pred(&Instance{Status: status})
 		}
-		Convey("matches a single status", func() {
+		convey.Convey("matches a single status", func() {
 			var opts instanceQueryOptions
 			desiredStatus := UNKNOWN
 			err := WithStatus(desiredStatus)(&opts)
-			So(err, ShouldBeNil)
+			convey.So(err, convey.ShouldBeNil)
 			pred := opts.predicate
-			So(pred, ShouldNotBeNil)
-			So(matchesStatus(pred, desiredStatus), ShouldBeTrue)
+			convey.So(pred, convey.ShouldNotBeNil)
+			convey.So(matchesStatus(pred, desiredStatus), convey.ShouldBeTrue)
 			for _, status := range []StatusType{UP, DOWN, STARTING, OUTOFSERVICE} {
-				So(status, ShouldNotEqual, desiredStatus)
-				So(matchesStatus(pred, status), ShouldBeFalse)
+				convey.So(status, convey.ShouldNotEqual, desiredStatus)
+				convey.So(matchesStatus(pred, status), convey.ShouldBeFalse)
 			}
 		})
-		Convey("matches a set of states", func() {
+		convey.Convey("matches a set of states", func() {
 			var opts instanceQueryOptions
 			desiredStates := []StatusType{DOWN, OUTOFSERVICE}
 			for _, status := range desiredStates {
 				err := WithStatus(status)(&opts)
-				So(err, ShouldBeNil)
+				convey.So(err, convey.ShouldBeNil)
 			}
 			pred := opts.predicate
-			So(pred, ShouldNotBeNil)
+			convey.So(pred, convey.ShouldNotBeNil)
 			for _, status := range desiredStates {
-				So(matchesStatus(pred, status), ShouldBeTrue)
+				convey.So(matchesStatus(pred, status), convey.ShouldBeTrue)
 			}
 			for _, status := range []StatusType{UP, STARTING, UNKNOWN} {
-				So(desiredStates, ShouldNotContain, status)
-				So(matchesStatus(pred, status), ShouldBeFalse)
+				convey.So(desiredStates, convey.ShouldNotContain, status)
+				convey.So(matchesStatus(pred, status), convey.ShouldBeFalse)
 			}
 		})
 	})
-	Convey("A shuffling directive", t, func() {
-		Convey("using the global Rand instance", func() {
+	convey.Convey("A shuffling directive", t, func() {
+		convey.Convey("using the global Rand instance", func() {
 			var opts instanceQueryOptions
 			err := Shuffled(&opts)
-			So(err, ShouldBeNil)
-			So(opts.intn, ShouldNotBeNil)
-			So(opts.intn(1), ShouldEqual, 0)
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(opts.intn, convey.ShouldNotBeNil)
+			convey.So(opts.intn(1), convey.ShouldEqual, 0)
 		})
-		Convey("using a specific Rand instance", func() {
+		convey.Convey("using a specific Rand instance", func() {
 			source := countingSource{}
 			var opts instanceQueryOptions
 			err := ShuffledWith(rand.New(&source))(&opts)
-			So(err, ShouldBeNil)
-			So(opts.intn, ShouldNotBeNil)
-			So(source.callCount, ShouldEqual, 0)
-			So(opts.intn(2), ShouldEqual, 0)
-			So(source.callCount, ShouldEqual, 1)
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(opts.intn, convey.ShouldNotBeNil)
+			convey.So(source.callCount, convey.ShouldEqual, 0)
+			convey.So(opts.intn(2), convey.ShouldEqual, 0)
+			convey.So(source.callCount, convey.ShouldEqual, 1)
 		})
 	})
 }
 
 func TestFilterInstancesInApps(t *testing.T) {
-	Convey("A predicate should preserve only those instances", t, func() {
-		Convey("with status UP", func() {
+	convey.Convey("A predicate should preserve only those instances", t, func() {
+		convey.Convey("with status UP", func() {
 			areUp := instancePredicateFrom(t, ThatAreUp)
-			Convey("from an empty set of applications", func() {
-				So(filterInstancesInApps(nil, areUp), ShouldBeEmpty)
+			convey.Convey("from an empty set of applications", func() {
+				convey.So(filterInstancesInApps(nil, areUp), convey.ShouldBeEmpty)
 			})
-			Convey("from a single application with no instances", func() {
-				So(filterInstancesInApps([]*Application{
+			convey.Convey("from a single application with no instances", func() {
+				convey.So(filterInstancesInApps([]*Application{
 					&Application{},
-				}, areUp), ShouldBeEmpty)
+				}, areUp), convey.ShouldBeEmpty)
 			})
-			Convey("from a single application with one DOWN instance", func() {
-				So(filterInstancesInApps([]*Application{
+			convey.Convey("from a single application with one DOWN instance", func() {
+				convey.So(filterInstancesInApps([]*Application{
 					&Application{
 						Instances: []*Instance{&Instance{Status: DOWN}},
 					},
-				}, areUp), ShouldBeEmpty)
+				}, areUp), convey.ShouldBeEmpty)
 			})
-			Convey("from a single application with one UP instance", func() {
+			convey.Convey("from a single application with one UP instance", func() {
 				instance := &Instance{Status: UP}
 				filtered := filterInstancesInApps([]*Application{
 					&Application{
 						Instances: []*Instance{instance},
 					},
 				}, areUp)
-				So(filtered, ShouldHaveLength, 1)
-				So(filtered, ShouldContain, instance)
+				convey.So(filtered, convey.ShouldHaveLength, 1)
+				convey.So(filtered, convey.ShouldContain, instance)
 			})
-			Convey("from a single application with multiple instances", func() {
+			convey.Convey("from a single application with multiple instances", func() {
 				upInstance := &Instance{Status: UP}
 				justHasUpInstance := func(instances ...*Instance) {
 					filtered := filterInstancesInApps([]*Application{
@@ -141,17 +141,17 @@ func TestFilterInstancesInApps(t *testing.T) {
 							Instances: instances,
 						},
 					}, areUp)
-					So(filtered, ShouldHaveLength, 1)
-					So(filtered, ShouldContain, upInstance)
+					convey.So(filtered, convey.ShouldHaveLength, 1)
+					convey.So(filtered, convey.ShouldContain, upInstance)
 				}
 				downInstance := &Instance{Status: DOWN}
-				Convey("with UP instance first", func() {
+				convey.Convey("with UP instance first", func() {
 					justHasUpInstance(upInstance, downInstance)
 				})
-				Convey("with UP instance last", func() {
+				convey.Convey("with UP instance last", func() {
 					justHasUpInstance(downInstance, upInstance)
 				})
-				Convey("with multiple UP instances", func() {
+				convey.Convey("with multiple UP instances", func() {
 					secondUpInstance := &Instance{Status: UP}
 					thirdUpInstance := &Instance{Status: UP}
 					filtered := filterInstancesInApps([]*Application{
@@ -159,13 +159,13 @@ func TestFilterInstancesInApps(t *testing.T) {
 							Instances: []*Instance{upInstance, downInstance, secondUpInstance, thirdUpInstance, &Instance{Status: OUTOFSERVICE}},
 						},
 					}, areUp)
-					So(filtered, ShouldHaveLength, 3)
-					So(filtered, ShouldContain, upInstance)
-					So(filtered, ShouldContain, secondUpInstance)
-					So(filtered, ShouldContain, thirdUpInstance)
+					convey.So(filtered, convey.ShouldHaveLength, 3)
+					convey.So(filtered, convey.ShouldContain, upInstance)
+					convey.So(filtered, convey.ShouldContain, secondUpInstance)
+					convey.So(filtered, convey.ShouldContain, thirdUpInstance)
 				})
 			})
-			Convey("from multiple applications", func() {
+			convey.Convey("from multiple applications", func() {
 				firstUpInstance := &Instance{Status: UP}
 				secondUpInstance := &Instance{Status: UP}
 				filtered := filterInstancesInApps([]*Application{
@@ -180,34 +180,34 @@ func TestFilterInstancesInApps(t *testing.T) {
 						Instances: []*Instance{&Instance{Status: UNKNOWN}},
 					},
 				}, areUp)
-				So(filtered, ShouldHaveLength, 2)
-				So(filtered, ShouldContain, firstUpInstance)
-				So(filtered, ShouldContain, secondUpInstance)
+				convey.So(filtered, convey.ShouldHaveLength, 2)
+				convey.So(filtered, convey.ShouldContain, firstUpInstance)
+				convey.So(filtered, convey.ShouldContain, secondUpInstance)
 			})
 		})
-		Convey("with status matching any of those designated", func() {
+		convey.Convey("with status matching any of those designated", func() {
 			upInstance := &Instance{Status: UP}
 			downInstance := &Instance{Status: DOWN}
 			startingInstance := &Instance{Status: STARTING}
 			outOfServiceInstance := &Instance{Status: OUTOFSERVICE}
 			pred := instancePredicateFrom(t, WithStatus(DOWN), WithStatus(OUTOFSERVICE))
-			Convey("from a single application", func() {
-				Convey("with no matching instances", func() {
-					So(filterInstancesInApps([]*Application{
+			convey.Convey("from a single application", func() {
+				convey.Convey("with no matching instances", func() {
+					convey.So(filterInstancesInApps([]*Application{
 						&Application{
 							Instances: []*Instance{upInstance, startingInstance},
 						},
-					}, pred), ShouldBeEmpty)
+					}, pred), convey.ShouldBeEmpty)
 				})
-				Convey("with two matching instances", func() {
+				convey.Convey("with two matching instances", func() {
 					filtered := filterInstancesInApps([]*Application{
 						&Application{
 							Instances: []*Instance{upInstance, downInstance, startingInstance, outOfServiceInstance},
 						},
 					}, pred)
-					So(filtered, ShouldHaveLength, 2)
-					So(filtered, ShouldContain, downInstance)
-					So(filtered, ShouldContain, outOfServiceInstance)
+					convey.So(filtered, convey.ShouldHaveLength, 2)
+					convey.So(filtered, convey.ShouldContain, downInstance)
+					convey.So(filtered, convey.ShouldContain, outOfServiceInstance)
 				})
 			})
 		})

@@ -4,26 +4,26 @@ package fargo_test
 
 import (
 	"encoding/xml"
-	"github.com/hudl/fargo"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/dubbogo/fargo"
+	"github.com/smartystreets/goconvey/convey"
 	"strconv"
 	"testing"
 )
 
 func TestGetInt(t *testing.T) {
-	Convey("Given an instance", t, func() {
+	convey.Convey("Given an instance", t, func() {
 		instance := new(fargo.Instance)
-		Convey("With metadata", func() {
+		convey.Convey("With metadata", func() {
 			metadata := new(fargo.InstanceMetadata)
 			instance.Metadata = *metadata
-			Convey("That has a single integer value", func() {
+			convey.Convey("That has a single integer value", func() {
 				key := "d"
 				value := 1
 				metadata.Raw = []byte("<" + key + ">" + strconv.Itoa(value) + "</" + key + ">")
-				Convey("GetInt should return that value", func() {
+				convey.Convey("GetInt should return that value", func() {
 					actualValue, err := metadata.GetInt(key)
-					So(err, ShouldBeNil)
-					So(actualValue, ShouldEqual, value)
+					convey.So(err, convey.ShouldBeNil)
+					convey.So(actualValue, convey.ShouldBeNil, value)
 				})
 			})
 		})
@@ -31,29 +31,29 @@ func TestGetInt(t *testing.T) {
 }
 
 func TestGetFloat(t *testing.T) {
-	Convey("Given an instance", t, func() {
+	convey.Convey("Given an instance", t, func() {
 		instance := new(fargo.Instance)
-		Convey("With metadata", func() {
+		convey.Convey("With metadata", func() {
 			metadata := new(fargo.InstanceMetadata)
 			instance.Metadata = *metadata
-			Convey("That has a float64 value", func() {
+			convey.Convey("That has a float64 value", func() {
 				key := "d"
 				value := 1.9
 				metadata.Raw = []byte("<" + key + ">" + strconv.FormatFloat(value, 'f', -1, 64) + "</" + key + ">")
-				Convey("GetFloat64 should return that value", func() {
+				convey.Convey("GetFloat64 should return that value", func() {
 					actualValue, err := metadata.GetFloat64(key)
-					So(err, ShouldBeNil)
-					So(actualValue, ShouldEqual, value)
+					convey.So(err, convey.ShouldBeNil)
+					convey.So(actualValue, convey.ShouldBeNil, value)
 				})
 			})
-			Convey("That has a float32 value", func() {
+			convey.Convey("That has a float32 value", func() {
 				key := "d"
 				value := 1.9
 				metadata.Raw = []byte("<" + key + ">" + strconv.FormatFloat(value, 'f', -1, 32) + "</" + key + ">")
-				Convey("GetFloat32 should return that value", func() {
+				convey.Convey("GetFloat32 should return that value", func() {
 					actualValue, err := metadata.GetFloat32(key)
-					So(err, ShouldBeNil)
-					So(actualValue, ShouldEqual, float32(1.9))
+					convey.So(err, convey.ShouldBeNil)
+					convey.So(actualValue, convey.ShouldBeNil, float32(1.9))
 				})
 			})
 		})
@@ -61,25 +61,25 @@ func TestGetFloat(t *testing.T) {
 }
 
 func TestSerializeMeta(t *testing.T) {
-	Convey("Given an instance", t, func() {
+	convey.Convey("Given an instance", t, func() {
 		instance := new(fargo.Instance)
-		Convey("With metadata", func() {
+		convey.Convey("With metadata", func() {
 			instance.SetMetadataString("test", "value")
-			Convey("Serializing results in correct JSON", func() {
+			convey.Convey("Serializing results in correct Jconvey.SoN", func() {
 				b, err := instance.Metadata.MarshalJSON()
-				So(err, ShouldBeNil)
-				So(string(b), ShouldEqual, "{\"test\":\"value\"}")
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(string(b), convey.ShouldBeNil, "{\"test\":\"value\"}")
 			})
-			Convey("Serializing results in correct XML", func() {
+			convey.Convey("Serializing results in correct XML", func() {
 				b, err := xml.Marshal(instance.Metadata)
-				So(err, ShouldBeNil)
-				So(string(b), ShouldEqual, "<InstanceMetadata><test>value</test></InstanceMetadata>")
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(string(b), convey.ShouldBeNil, "<InstanceMetadata><test>value</test></InstanceMetadata>")
 			})
-			Convey("Blank metadata results in blank XML", func() {
+			convey.Convey("Blank metadata results in blank XML", func() {
 				metadata := new(fargo.InstanceMetadata)
 				b, err := xml.Marshal(metadata)
-				So(err, ShouldBeNil)
-				So(string(b), ShouldEqual, "<InstanceMetadata></InstanceMetadata>")
+				convey.So(err, convey.ShouldBeNil)
+				convey.So(string(b), convey.ShouldBeNil, "<InstanceMetadata></InstanceMetadata>")
 			})
 		})
 	})

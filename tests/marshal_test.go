@@ -10,13 +10,13 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/hudl/fargo"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/dubbogo/fargo"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func TestJsonMarshal(t *testing.T) {
 	for _, f := range []string{"apps-sample-1-1.json", "apps-sample-1-2.json", "apps-sample-2-2.json"} {
-		Convey("Reading .", t, func() {
+		convey.Convey("Reading .", t, func() {
 			blob, err := ioutil.ReadFile("marshal_sample/" + f)
 
 			var v fargo.GetAppsResponseJson

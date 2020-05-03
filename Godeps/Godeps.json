@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/hudl/fargo",
+	"ImportPath": "github.com/dubbogo/fargo",
 	"GoVersion": "go1.6.2",
 	"Deps": [
 		{
